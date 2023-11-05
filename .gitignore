@@ -1,0 +1,16 @@
+# VS Code
+.vscode/
+
+# dotenv environment variables file
+.env
+.env.test
+
+# Distribution
+venv/
+
+notes
+
+data/
+.pkl
+
+__pycache__/
