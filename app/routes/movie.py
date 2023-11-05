@@ -3,7 +3,7 @@ from app.models.movie import Movie
 from app.models.user import User
 from app.config.database import movies_collection
 from app.schema.schemas import list_serial, individual_serial
-from app.models.model import recommend
+from app.utils.model import recommend
 from bson import ObjectId
 from app.routes.auth import get_current_active_user
 from datetime import date

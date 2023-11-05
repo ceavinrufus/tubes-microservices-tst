@@ -6,11 +6,14 @@ from app.models.token import Token, TokenData
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from app.config.database import users_collection
+from dotenv import load_dotenv, find_dotenv
 import os
 
-SECRET_KEY = os.environ.get("SECRET_KEY", "")
-ALGORITHM = os.environ.get("ALGORITHM", "")
-ACCESS_TOKEN_EXPIRE_MINUTES = os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES", 0)
+load_dotenv(find_dotenv())
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM") 
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 0))
 
 router = APIRouter()
 

@@ -1,8 +1,12 @@
 from pymongo import MongoClient
 import os
 
-database_url = os.environ.get("DATABASE_URL", "localhost:5432")
-client = MongoClient("mongodb+srv://ceavinrufus:mongodb123tst@cluster0.ld80c2r.mongodb.net/?retryWrites=true&w=majority")
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv())
+
+database_url = os.getenv("DATABASE_URL")
+client = MongoClient(database_url)
 
 db = client.movie_db
 

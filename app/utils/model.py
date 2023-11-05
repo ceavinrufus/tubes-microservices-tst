@@ -1,13 +1,13 @@
 from pathlib import Path
 import pickle 
 
-BASE_DIR = Path(__file__).resolve(strict=True).parent
+BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 
 # Open the pickle files using the `with` statement to ensure they are properly closed.
-with open(f"{BASE_DIR}\\movies_list.pkl", "rb") as f1:
+with open(f"{BASE_DIR}\\data\\movies_list.pkl", "rb") as f1:
     movies = pickle.load(file=f1)
 
-with open(f"{BASE_DIR}\\similarity.pkl", "rb") as f2:
+with open(f"{BASE_DIR}\\data\\similarity.pkl", "rb") as f2:
     similarity = pickle.load(file=f2)
 
 movies_list=movies['title'].values
