@@ -26,7 +26,7 @@ async def get_movie_by_id(movie_id: int):
 
 # Create a movie
 @router.post('/movies')
-async def create_movie(movie: Movie, current_user: User = Depends(get_current_active_user)):
+async def create_movie(movie: Movie):
     existing_movie = movies_collection.find_one({"id": movie.id})
     if existing_movie:
         raise HTTPException(status_code=400, detail="Movie with this ID already exists")
@@ -39,18 +39,18 @@ async def create_movie(movie: Movie, current_user: User = Depends(get_current_ac
 
 # Update a movie
 @router.put('/movies/{id}')
-async def put_movie(id: str, movie: Movie, current_user: User = Depends(get_current_active_user)):
+async def put_movie(id: str, movie: Movie):
     movies_collection.find_one_and_update({"_id": ObjectId(id)}, {"$set": dict(movie)})
     return {"data":movie}
 
 # Delete a movie
 @router.delete('/movies/{id}')
-async def delete_movie(id: str, current_user: User = Depends(get_current_active_user)):
+async def delete_movie(id: str):
     movies_collection.find_one_and_delete({"_id": ObjectId(id)})
 
 # Recommendation
 @router.get("/recommendation/")
-async def recommendation(movie_id: int, amount: int, current_user: User = Depends(get_current_active_user)):
+async def recommendation(movie_id: int, amount: int):
     if amount > 20:
         raise HTTPException(status_code=400, detail="The amount of recommendation should lower than or equal to 20")
     existing_movie = movies_collection.find_one({"id": movie_id})
@@ -80,3 +80,5 @@ async def search_movie(title: str = Query(..., description="Search for movies by
         return {"data": list_serial(sorted_movies)}
     else:
         return {"message": "No matching movies found"}
+
+# async def recommendation(movie_id: int, amount: int, current_user: User = Depends(get_current_active_user)):

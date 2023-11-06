@@ -1,4 +1,4 @@
-FROM python:3.11
+FROM python:3.10.10-buster
 
 WORKDIR /tubes-tst-app
 
@@ -10,4 +10,4 @@ COPY ./app /tubes-tst-app/app
 
 COPY .env /tubes-tst-app/.env
 
-CMD ["uvicorn", "app.main:app" , "--host", "0.0.0.0", "--port", "8080", "--reload"]
+CMD ["uvicorn", "app.main:app" , "--host", "0.0.0.0", "--port", "80"]
