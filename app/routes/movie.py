@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from app.models.movie import Movie
 from app.models.user import User
 from app.config.database import movies_collection
-from app.schema.schemas import list_serial, individual_serial
+from app.schema.movie_schemas import list_serial, individual_serial
 from app.utils.model import recommend
 from bson import ObjectId
 from app.routes.auth import get_current_active_user
@@ -39,14 +39,16 @@ async def create_movie(movie: Movie):
 
 # Update a movie
 @router.put('/movies/{id}')
-async def put_movie(id: str, movie: Movie):
-    movies_collection.find_one_and_update({"_id": ObjectId(id)}, {"$set": dict(movie)})
+async def put_movie(id: int, movie: Movie):
+    movie.release_date = movie.release_date.isoformat()
+    movies_collection.find_one_and_update({"id": id}, {"$set": dict(movie)})
+    movie.release_date = date.fromisoformat(movie.release_date)
     return {"data":movie}
 
 # Delete a movie
 @router.delete('/movies/{id}')
-async def delete_movie(id: str):
-    movies_collection.find_one_and_delete({"_id": ObjectId(id)})
+async def delete_movie(id: int):
+    movies_collection.find_one_and_delete({"id": id})
 
 # Recommendation
 @router.get("/recommendation/")

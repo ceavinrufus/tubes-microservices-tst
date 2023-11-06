@@ -12,3 +12,4 @@ db = client.movie_db
 
 movies_collection = db["movies"]
 users_collection = db["users"]
+orders_collection = db["orders"]
