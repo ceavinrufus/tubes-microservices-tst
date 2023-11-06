@@ -3,11 +3,13 @@ from app.models.movie import Movie
 from app.models.user import User
 from app.config.database import movies_collection
 from app.schema.movie_schemas import list_serial, individual_serial
-from app.utils.model import recommend
 from bson import ObjectId
 from app.routes.auth import get_current_active_user
 from datetime import date
 from fuzzywuzzy import fuzz
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+import pandas as pd
 
 # from app.utils import user_modeling
 
@@ -58,8 +60,27 @@ async def recommendation(movie_id: int, amount: int):
     existing_movie = movies_collection.find_one({"id": movie_id})
     if not existing_movie:
         raise HTTPException(status_code=400, detail="Movie with this ID not exists")
-    rec = recommend(individual_serial(existing_movie)["title"], amount)
-    return {"recommendations": rec}
+    
+    movies = pd.DataFrame(list_serial(movies_collection.find()))
+    movies = movies[['movie_id', 'title', 'overview', 'genres']]
+    # movies['tags'] = movies['overview'] + ' ' + ' '.join(movies['genres'])
+    movies['tags'] = movies.apply(lambda row: row['overview'] + ' ' + ' '.join([mov['name'] for mov in row['genres']]), axis=1)
+
+
+    new_data  = movies.drop(columns=['overview', 'genres'])
+    cv=CountVectorizer(max_features=10000, stop_words='english')
+    vector=cv.fit_transform(new_data['tags'].values.astype('U')).toarray()
+    similarity=cosine_similarity(vector)
+    
+    index=movies[movies['title']==individual_serial(existing_movie)["title"]].index[0]
+    distance = sorted(list(enumerate(similarity[index])), reverse=True, key=lambda vector:vector[1])
+    recommend_movie=[]
+    for i in distance[1:amount+1]:
+        # movies_id=movies.iloc[i[0]].movie_id
+        recommend_movie.append({"movie_id":int(movies.iloc[i[0]].movie_id),"title":movies.iloc[i[0]].title})
+
+    # rec = recommend(individual_serial(existing_movie)["title"], amount)
+    return {"recommendations": recommend_movie}
 
 # Search
 @router.get("/search-movie/")
