@@ -1,18 +1,23 @@
 from pathlib import Path
 import pickle 
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 
-# Open the pickle files using the `with` statement to ensure they are properly closed.
-with open(f"{BASE_DIR}\\data\\movies_list.pkl", "rb") as f1:
-    movies = pickle.load(file=f1)
-
-with open(f"{BASE_DIR}\\data\\similarity.pkl", "rb") as f2:
-    similarity = pickle.load(file=f2)
-
-movies_list=movies['title'].values
-
 def recommend(movie, amount):
+    # Training model
+    movies = pd.read_csv(f'{BASE_DIR}\\data\\dataset.csv')
+    movies=movies[['id', 'title', 'overview', 'genre']]
+    movies['tags'] = movies['overview'] + movies['genre']
+    new_data  = movies.drop(columns=['overview', 'genre'])
+    
+    cv=CountVectorizer(max_features=10000, stop_words='english')
+    
+    vector=cv.fit_transform(new_data['tags'].values.astype('U')).toarray()
+    similarity=cosine_similarity(vector)
+    
     index=movies[movies['title']==movie].index[0]
     distance = sorted(list(enumerate(similarity[index])), reverse=True, key=lambda vector:vector[1])
     recommend_movie=[]
