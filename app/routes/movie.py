@@ -3,8 +3,7 @@ from app.models.movie import Movie
 from app.models.user import User
 from app.config.database import movies_collection
 from app.schema.movie_schemas import list_serial, individual_serial
-from bson import ObjectId
-from app.routes.auth import get_current_active_user
+from app.middleware.auth import get_current_active_user, check_admin
 from datetime import date
 from fuzzywuzzy import fuzz
 from sklearn.feature_extraction.text import CountVectorizer
@@ -16,22 +15,30 @@ import pandas as pd
 router = APIRouter()
 
 # Get all movies
-@router.get('/movies')
+@router.get('')
 async def get_all_movies():
     movies = list_serial(movies_collection.find().limit(100))
     return {"results":movies}
 
 # Get a movie by its ID
-@router.get('/movies/{movie_id}')
+@router.get('/{movie_id}')
 async def get_movie_by_id(movie_id: int):
-    return {"results":individual_serial(movies_collection.find_one({"id": movie_id}))}
+    movie = movies_collection.find_one({"id": movie_id})
+    
+    if not movie:
+        raise HTTPException(status_code=404, detail="Movie not found")
+
+    return {"results":individual_serial(movie)}
 
 # Create a movie
-@router.post('/movies')
-async def create_movie(movie: Movie):
+@router.post('')
+async def create_movie(movie: Movie, current_user: User = Depends(check_admin)):
     existing_movie = movies_collection.find_one({"id": movie.id})
     if existing_movie:
         raise HTTPException(status_code=400, detail="Movie with this ID already exists")
+
+    genres_as_dict = [dict(genre) for genre in movie.genres]
+    movie.genres = genres_as_dict
 
     movie.release_date = movie.release_date.isoformat()
     movies_collection.insert_one(dict(movie))
@@ -40,17 +47,37 @@ async def create_movie(movie: Movie):
     return {"data":movie}
 
 # Update a movie
-@router.put('/movies/{id}')
-async def put_movie(id: int, movie: Movie):
+@router.put('/{id}')
+async def put_movie(id: int, movie: Movie, current_user: User = Depends(check_admin)):
+    existing_movie = movies_collection.find_one({"id": id})
+    if not existing_movie:
+        raise HTTPException(status_code=404, detail="Movie not found")
+    
+    if id != movie.id:
+        existing_movie = movies_collection.find_one({"id": movie.id})
+        if existing_movie:
+            raise HTTPException(status_code=400, detail="Movie with this ID already exists")
+
+    genres_as_dict = [dict(genre) for genre in movie.genres]
+    movie.genres = genres_as_dict
+
     movie.release_date = movie.release_date.isoformat()
     movies_collection.find_one_and_update({"id": id}, {"$set": dict(movie)})
     movie.release_date = date.fromisoformat(movie.release_date)
+
     return {"data":movie}
 
 # Delete a movie
-@router.delete('/movies/{id}')
-async def delete_movie(id: int):
+@router.delete('/{id}')
+async def delete_movie(id: int, current_user: User = Depends(check_admin)):
+    existing_movie = movies_collection.find_one({"id": id})
+    
+    if not existing_movie:
+        raise HTTPException(status_code=404, detail="Movie not found")
+    
     movies_collection.find_one_and_delete({"id": id})
+
+    return {"message": "Movie deleted successfully"}
 
 # Recommendation
 @router.get("/recommendation/")
@@ -83,7 +110,7 @@ async def recommendation(movie_id: int, amount: int):
     return {"recommendations": recommend_movie}
 
 # Search
-@router.get("/search-movie/")
+@router.get("/search/")
 async def search_movie(title: str = Query(..., description="Search for movies by title")):
     # Use a regex pattern to match titles that contain the query
     regex_pattern = f".*{title}.*"
@@ -103,5 +130,3 @@ async def search_movie(title: str = Query(..., description="Search for movies by
         return {"data": list_serial(sorted_movies)}
     else:
         return {"message": "No matching movies found"}
-
-# async def recommendation(movie_id: int, amount: int, current_user: User = Depends(get_current_active_user)):

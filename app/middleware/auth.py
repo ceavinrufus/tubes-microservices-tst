@@ -1,24 +1,21 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from datetime import datetime, timedelta
-from app.models.user import User, UserInDB, CreateUser
-from app.models.token import Token, TokenData
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from app.models.token import TokenData
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from app.config.database import users_collection
 from dotenv import load_dotenv, find_dotenv
+from datetime import datetime, timedelta
+from app.models.user import UserInDB
+from app.config.database import users_collection
 import os
 
 load_dotenv(find_dotenv())
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM") 
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 0))
-
-router = APIRouter()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/login")
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
@@ -79,43 +76,8 @@ async def get_current_active_user(current_user: UserInDB = Depends(get_current_u
     return current_user
 
 
-@router.post("/register", response_model=Token)
-async def register(user: CreateUser):
-    existing_user = users_collection.find_one({"username": user.username})
-    if existing_user:
-        raise HTTPException(status_code=400, detail="User with this username already exists")
+async def check_admin(current_user: UserInDB = Depends(get_current_active_user)):
+    if current_user.role != "admin" and current_user.role != "superadmin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin or super admin only!", headers={"WWW-Authenticate": "Bearer realm='Admin or Super Admin Access'"})
     
-
-    user_dict = UserInDB(
-        username=user.username,
-        email=user.email,
-        password=get_password_hash(user.password),
-        full_name=user.full_name,
-        disabled=False
-    )
-    users_collection.insert_one(dict(user_dict))
-    
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(data={"sub":user.username}, expires_delta=access_token_expires)
-
-    return {"access_token": access_token, "token_type": "bearer"}
-
-
-@router.post("/login", response_model=Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = authenticate_user(form_data.username, form_data.password)
-    if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password", headers={"WWW-Authenticate": "Bearer"})
-    
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(data={"sub":user.username}, expires_delta=access_token_expires)
-
-    return {"access_token": access_token, "token_type": "bearer"}
-
-
-@router.get("/users/me/", response_model=User)
-async def read_users_me(current_user: User = Depends(get_current_active_user)):
     return current_user
-
-
-

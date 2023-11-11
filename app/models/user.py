@@ -7,6 +7,7 @@ class User(BaseModel):
     email: str or None = None
     full_name: str or None = None
     disabled: bool or None = None
+    role: str or None = None
 
 class UserInDB(User):
     password: str
