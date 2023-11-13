@@ -81,7 +81,7 @@ async def delete_movie(id: int, current_user: User = Depends(check_admin)):
 
 # Recommendation
 @router.get("/recommendation/")
-async def recommendation(movie_id: int, amount: int):
+async def recommendation(movie_id: int, amount: int, current_user: User = Depends(get_current_active_user)):
     if amount > 20:
         raise HTTPException(status_code=400, detail="The amount of recommendation should lower than or equal to 20")
     existing_movie = movies_collection.find_one({"id": movie_id})

@@ -10,13 +10,13 @@ router = APIRouter()
 
 # Get all orders
 @router.get('')
-async def get_all_orders():
+async def get_all_orders(current_user: User = Depends(check_admin)):
     orders = list_serial(orders_collection.find().limit(100))
     return {"results":orders}
 
 # Get a order by its ID
 @router.get('/{order_id}')
-async def get_order_by_id(order_id: int):
+async def get_order_by_id(order_id: int, current_user: User = Depends(get_current_active_user)):
     order = orders_collection.find_one({"id": order_id})
     
     if not order:
