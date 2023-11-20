@@ -134,6 +134,8 @@ async def mood_recommendation(mood: str, max_amount: int, current_user: User = D
         recommend_movie = list(movies_collection.find({"genres.name":{ "$in" : ["Crime", "War", "Action"] }}))
     elif (mood.lower() == "humorous"):
         recommend_movie = list(movies_collection.find({"genres.name":"Comedy"}))
+    else:
+        raise HTTPException(status_code=400, detail="Can't detect mood")
 
     if max_amount > len(recommend_movie):
         max_amount = len(recommend_movie)
