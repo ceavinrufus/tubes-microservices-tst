@@ -4,9 +4,11 @@ Made by Ceavin Rufus
 
 ## Program Description
 
-Program ini merupakan sebuah microservice yang bertujuan untuk memberikan rekomendasi film kepada pengguna berdasarkan masukan film. Microservice ini akan menerima permintaan dari pengguna dan menggunakan machine learning untuk menghasilkan daftar film yang sesuai. Batasan utama microservice ini adalah hanya memberikan rekomendasi film dari data yang ada dalam sistem, seperti metadata film, tanpa mengintegrasikan data dari sumber eksternal.
+_Microservice_ ini berguna untuk memberikan rekomendasi film kepada pengguna berdasarkan sebuah film acuan. _Microservice_ ini menggunakan _machine learning_ untuk menghasilkan daftar film yang sesuai dengan judul film. Selain itu, _microservice_ ini juga berguna untuk memberikan rekomendasi film berdasarkan _mood_ pengguna.
 
-Microservice ini juga menyediakan fitur mencari film berdasarkan input judul (search engine) untuk membantu pengguna mengetahui ID dari film yang akan digunakan menjadi input dari fitur rekomendasi film.
+Batasan utama _microservice_ ini adalah hanya memberikan rekomendasi film dari data yang ada dalam sistem, seperti metadata film, tanpa mengintegrasikan data dari sumber eksternal. Selain itu, _mood_ pengguna yang dapat di-_detect_ oleh _microservice_ ini juga masih terbatas.
+
+_Microservice_ ini juga menyediakan fitur mencari film berdasarkan input judul (_search engine_) untuk membantu pengguna mengetahui ID dari film yang akan digunakan menjadi input dari fitur rekomendasi film.
 
 ## Requirements
 
