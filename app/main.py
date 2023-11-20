@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from app.routes.movie import router as movie_router
 from app.routes.movie import router_2 as core_router
-from app.routes.order import router as order_router
 from app.routes.user import router as auth_router
 
 app = FastAPI()
@@ -13,4 +12,3 @@ async def root():
 app.include_router(auth_router, prefix="/users")
 app.include_router(core_router, prefix="/movies")
 app.include_router(movie_router, prefix="/movies")
-app.include_router(order_router, prefix="/orders")
