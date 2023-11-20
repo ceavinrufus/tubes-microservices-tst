@@ -12,7 +12,8 @@ import pandas as pd
 
 # from app.utils import user_modeling
 
-router = APIRouter()
+router = APIRouter(tags=["Movies"])
+router_2 = APIRouter(tags=["Core Service", "Movies"])
 
 # Get all movies
 @router.get('')
@@ -80,10 +81,10 @@ async def delete_movie(id: int, current_user: User = Depends(check_admin)):
     return {"message": "Movie deleted successfully"}
 
 # Recommendation
-@router.get("/recommendation/")
-async def recommendation(movie_id: int, amount: int, current_user: User = Depends(get_current_active_user)):
-    if amount > 20:
-        raise HTTPException(status_code=400, detail="The amount of recommendation should lower than or equal to 20")
+@router_2.get("/recommendation/")
+async def recommendation(movie_id: int, max_amount: int, current_user: User = Depends(get_current_active_user)):
+    if max_amount > 20:
+        raise HTTPException(status_code=400, detail="The max_amount of recommendation should lower than or equal to 20")
     existing_movie = movies_collection.find_one({"id": movie_id})
     if not existing_movie:
         raise HTTPException(status_code=400, detail="Movie with this ID not exists")
@@ -102,12 +103,47 @@ async def recommendation(movie_id: int, amount: int, current_user: User = Depend
     index=movies[movies['title']==individual_serial(existing_movie)["title"]].index[0]
     distance = sorted(list(enumerate(similarity[index])), reverse=True, key=lambda vector:vector[1])
     recommend_movie=[]
-    for i in distance[1:amount+1]:
+    for i in distance[1:max_amount+1]:
         # movies_id=movies.iloc[i[0]].movie_id
         recommend_movie.append({"movie_id":int(movies.iloc[i[0]].movie_id),"title":movies.iloc[i[0]].title})
 
-    # rec = recommend(individual_serial(existing_movie)["title"], amount)
+    # rec = recommend(individual_serial(existing_movie)["title"], max_amount)
     return {"recommendations": recommend_movie}
+
+@router_2.get("/recommendation/mood/")
+async def mood_recommendation(mood: str, max_amount: int, current_user: User = Depends(get_current_active_user)):
+    if max_amount > 20:
+        raise HTTPException(status_code=400, detail="The max_amount of recommendation should lower than or equal to 20")
+
+    if (mood.lower() == "tired"):
+        recommend_movie = list(movies_collection.find({"genres.name":{ "$in" : ["Action", "Adventure"] }}))
+    elif (mood.lower() == "sad"):
+        recommend_movie = list(movies_collection.find({"genres.name":{ "$in" : ["Drama", "Romance"] }}))
+    elif (mood.lower() == "bored"):
+        recommend_movie = list(movies_collection.find({
+            "$and": [
+                {"genres.name":{ "$in" : ["Crime", "Adventure"] }},
+                {"vote_average":{ "$gt": 7 }}
+            ]
+        }))
+    elif (mood.lower() == "happy"):
+        recommend_movie = list(movies_collection.find({"genres.name":{ "$in" : ["Music", "Animation"] }}))
+    elif (mood.lower() == "chill"):
+        recommend_movie = list(movies_collection.find({"genres.name":{ "$in" : ["Drama", "Family", "Comedy"] }}))
+    elif (mood.lower() == "tense"):
+        recommend_movie = list(movies_collection.find({"genres.name":{ "$in" : ["Crime", "War", "Action"] }}))
+    elif (mood.lower() == "humorous"):
+        recommend_movie = list(movies_collection.find({"genres.name":"Comedy"}))
+
+    if max_amount > len(recommend_movie):
+        max_amount = len(recommend_movie)
+        
+    result=[]
+    for i in range(max_amount):
+        result.append({"movie_id":int(recommend_movie[i]["id"]),"title":recommend_movie[i]["title"]})
+
+    return {"recommendations": result}
+    # return {"recommendations": list_serial(recommend_movie)}
 
 # Search
 @router.get("/search/")

@@ -6,7 +6,7 @@ from app.schema.order_schemas import list_serial, individual_serial
 from app.middleware.auth import get_current_active_user, check_admin
 from datetime import date
 
-router = APIRouter()
+router = APIRouter(tags=["Orders"])
 
 # Get all orders
 @router.get('')

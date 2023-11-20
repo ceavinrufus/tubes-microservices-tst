@@ -9,7 +9,7 @@ import os
 
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 0))
 
-router = APIRouter()
+router = APIRouter(tags=["User"])
 
 @router.post("/register", response_model=Token)
 async def register(user: CreateUser):
