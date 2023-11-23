@@ -30,7 +30,8 @@ stages:
       displayName: Build Docker image
       inputs:
         command: build
-        repository: tubes-tst
+        repository: 'tubeststapi.azurecr.io/tubes-tst'
+        containerRegistry: 'TubesTSTDocker'
         dockerfile: $(dockerfilePath)
         tags: |
           $(imageTag)
@@ -40,7 +41,7 @@ stages:
       displayName: Push Docker image to registry
       inputs:
         command: push
-        repository: tubes-tst
+        repository: 'tubeststapi.azurecr.io/tubes-tst'
         containerRegistry: 'TubesTSTDocker'  # Update with your container registry service connection name
         tags: |
           $(imageTag)
