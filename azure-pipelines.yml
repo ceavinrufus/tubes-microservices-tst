@@ -10,12 +10,10 @@ resources:
 
 variables:
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: '3919acec-e568-4d31-8c66-c887f9ffd353'
-  imageRepository: 'tubes-tst'
-  containerRegistry: 'tubeststapi.azurecr.io'
+  # dockerRegistryServiceConnection: '3919acec-e568-4d31-8c66-c887f9ffd353'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
-
+  imageTag: 'build-tag-1'
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
 
@@ -23,8 +21,8 @@ stages:
 - stage: Build
   displayName: Build and push stage
   jobs:
-  - job: Build
-    displayName: Build
+  - job: DockerBuildAndPush
+    displayName: Docker Build and Push
     pool:
       vmImage: $(vmImageName)
     steps:
@@ -32,22 +30,17 @@ stages:
       displayName: Build Docker image
       inputs:
         command: build
-        repository: $(imageRepository)
+        repository: tubes-tst
         dockerfile: $(dockerfilePath)
-        containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
-          $(tag)
-        arguments: '--build-arg DATABASE_URL="$(DATABASE_URL)" --build-arg SECRET_KEY="$(SECRET_KEY)" --build-arg ALGORITHM="$(ALGORITHM)" --build-arg ACCESS_TOKEN_EXPIRE_MINUTES=$(ACCESS_TOKEN_EXPIRE_MINUTES)'
-  - job: Push
-    displayName: Push
-    pool:
-      vmImage: $(vmImageName)
-    steps:
-      - task: Docker@2
-        displayName: Push Docker image to registry
-        inputs:
-          command: push
-          repository: $(imageRepository)
-          containerRegistry: $(dockerRegistryServiceConnection)
-          tags: |
-            $(tag)
+          $(imageTag)
+        arguments: '--build-arg DATABASE_URL=$(DATABASE_URL) --build-arg SECRET_KEY=$(SECRET_KEY) --build-arg ALGORITHM=$(ALGORITHM) --build-arg ACCESS_TOKEN_EXPIRE_MINUTES=$(ACCESS_TOKEN_EXPIRE_MINUTES)'
+
+    - task: Docker@2
+      displayName: Push Docker image to registry
+      inputs:
+        command: push
+        repository: tubes-tst
+        containerRegistry: 'TubesTSTDocker'  # Update with your container registry service connection name
+        tags: |
+          $(imageTag)
