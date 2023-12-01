@@ -10,6 +10,6 @@ client = MongoClient(database_url)
 
 db = client.movie_db
 
-moods_collection = db["moods"]
+vibes_collection = db["vibes"]
 movies_collection = db["movies"]
 users_collection = db["users"]

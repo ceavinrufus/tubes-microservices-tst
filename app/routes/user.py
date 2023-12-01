@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-from datetime import timedelta
+from datetime import timedelta, date
 from app.models.user import User, UserInDB, CreateUser
 from app.models.token import Token
 from app.middleware.auth import get_password_hash, create_access_token, get_current_active_user, authenticate_user
@@ -17,17 +17,21 @@ async def register(user: CreateUser):
     if existing_user:
         raise HTTPException(status_code=400, detail="User with this username already exists")
     
-
     user_dict = UserInDB(
         username=user.username,
         email=user.email,
         password=get_password_hash(user.password),
         full_name=user.full_name,
         disabled=False,
-        role="guest"
+        role="guest",
+        gender=user.gender,
+        weight=float(user.weight),
+        height=float(user.height),
+        birthdate=user.birthdate
     )
+    user_dict.birthdate=user_dict.birthdate.isoformat()
     users_collection.insert_one(dict(user_dict))
-    
+
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(data={"sub":user.username}, expires_delta=access_token_expires)
 

@@ -70,6 +70,9 @@ async def create_movie(movie: Movie, current_user: User = Depends(check_admin)):
     genres_as_dict = [dict(genre) for genre in movie.genres]
     movie.genres = genres_as_dict
 
+    spokenlang_as_dict = [dict(spokenlang) for spokenlang in movie.spoken_languages]
+    movie.spoken_languages = spokenlang_as_dict
+
     movie.release_date = movie.release_date.isoformat()
     movies_collection.insert_one(dict(movie))
     movie.release_date = date.fromisoformat(movie.release_date)
@@ -78,7 +81,7 @@ async def create_movie(movie: Movie, current_user: User = Depends(check_admin)):
 
 # Update a movie
 @router.put('/{id}')
-async def put_movie(id: int, movie: Movie, current_user: User = Depends(check_admin)):
+async def update_movie(id: int, movie: Movie, current_user: User = Depends(check_admin)):
     existing_movie = movies_collection.find_one({"id": id})
     if not existing_movie:
         raise HTTPException(status_code=404, detail="Movie not found")
@@ -90,6 +93,9 @@ async def put_movie(id: int, movie: Movie, current_user: User = Depends(check_ad
 
     genres_as_dict = [dict(genre) for genre in movie.genres]
     movie.genres = genres_as_dict
+
+    spokenlang_as_dict = [dict(spokenlang) for spokenlang in movie.spoken_languages]
+    movie.spoken_languages = spokenlang_as_dict
 
     movie.release_date = movie.release_date.isoformat()
     movies_collection.find_one_and_update({"id": id}, {"$set": dict(movie)})
