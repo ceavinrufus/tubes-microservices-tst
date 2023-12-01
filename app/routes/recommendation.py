@@ -8,14 +8,20 @@ from datetime import date
 from fuzzywuzzy import fuzz
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+from dotenv import load_dotenv, find_dotenv
 from app.middleware.service2auth import Service2AuthMiddleware
 import pandas as pd
 import json
+import os
 
 # from app.utils import user_modeling
+load_dotenv(find_dotenv())
+
+USERNAME = os.getenv("USERNAME")
+PASSWORD = os.getenv("PASSWORD") 
 
 router = APIRouter(tags=["Recommendation"])
-service2_auth = Service2AuthMiddleware('https://bevbuddy.up.railway.app/login', 'ceavinrufus', 'tubestst')
+service2_auth = Service2AuthMiddleware('https://bevbuddy.up.railway.app/login', USERNAME, PASSWORD)
 
 
 # Make authenticated requests to Service 2 endpoints using the middleware with different methods
