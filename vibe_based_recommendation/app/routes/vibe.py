@@ -1,12 +1,58 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
-from app.schema.vibe_schemas import list_serial, individual_serial
+from app.schemas.vibe_schemas import list_serial, individual_serial
 from app.config.database import vibes_collection
 from datetime import date as d
 from app.models.vibe import Vibe, VibeInDB
 from app.middleware.auth import get_current_active_user, check_admin
+from utils.calculate_age import calculate_age
 from app.models.user import User
 
 router = APIRouter(tags=["Vibes"])
+
+
+from fastapi import APIRouter, Depends, HTTPException
+from app.models.vibe import RecCriteria
+from app.models.user import User
+from app.middleware.auth import get_current_active_user
+from dotenv import load_dotenv
+from app.middleware.service2auth import Service2AuthMiddleware
+import pandas as pd
+import json
+import os
+
+
+# from app.utils import user_modeling
+load_dotenv(override=True)
+
+USERNAME = os.getenv("USERNAME")
+PASSWORD = os.getenv("PASSWORD") 
+
+router = APIRouter(tags=["Recommendations"])
+service2_auth = Service2AuthMiddleware('https://bevbuddy.up.railway.app/login', USERNAME, PASSWORD)
+
+@router.post("/beverages/")
+async def beverage_recommendation(criteria: RecCriteria, max_amount: int, current_user: User = Depends(get_current_active_user)):
+    if max_amount > 20:
+        raise HTTPException(status_code=400, detail="The max_amount of recommendation should lower than or equal to 20")
+    
+    request_body = {
+        "activity": criteria.activity,
+        "age": calculate_age(current_user.birthdate.isoformat()),
+        "gender": current_user.gender,
+        "height": current_user.height,
+        "mood": criteria.mood,
+        "weather": "yes" if criteria.weather else "no",
+        "weight": current_user.weight,
+        "max_rec": max_amount
+    }
+
+    response = service2_auth.make_authenticated_request('https://bevbuddy.up.railway.app/recommendations', method='POST', data=request_body)
+
+    if response.status_code == 200:
+        return {"results": response.json()}
+    else:
+        return json.loads(response.text)  # Retrieve the response text for error details
+
 
 @router.get('')
 async def get_all_vibes(current_user: User = Depends(get_current_active_user)):

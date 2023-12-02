@@ -7,8 +7,7 @@ class User(BaseModel):
     email: str or None = None
     full_name: str or None = None
     gender: Literal ["Male", "Female"]
-    disabled: bool or None = None
-    role: str or None = None
+    role: Literal ["customer", "admin", "superadmin"]
     weight: float
     height: float
     birthdate: date
@@ -16,12 +15,6 @@ class User(BaseModel):
 class UserInDB(User):
     password: str
 
-class CreateUser(BaseModel):
+class UserLogin(BaseModel):
     username: str
-    email: str or None = None
-    full_name: str or None = None
-    gender: Literal ["Male", "Female"]
-    birthdate: date
     password: str
-    weight: float
-    height: float
