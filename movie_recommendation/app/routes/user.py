@@ -11,7 +11,7 @@ import os
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 0))
 SUPERADMIN_SECRET_KEY = os.getenv("SUPERADMIN_SECRET_KEY", 0)
 
-router = APIRouter(tags=["User"])
+router = APIRouter(tags=["Users"])
 auth = AuthHandler()
 
 @router.post("/register", response_model=Token)
@@ -61,6 +61,3 @@ async def login(form_data: UserLogin):
 @router.get("/me", response_model=User)
 async def read_users_me(current_user: User = Depends(JWTBearer())):
     return current_user
-
-
-

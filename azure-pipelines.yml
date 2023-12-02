@@ -1,0 +1,40 @@
+trigger:
+  - master
+
+resources:
+  - repo: self
+
+variables:
+  # Container registry service connection established during pipeline creation
+  dockerComposeFile: "$(Build.SourcesDirectory)/docker-compose.yml"
+  tag: "$(Build.BuildId)"
+  imageTag: "latest"
+
+stages:
+  - stage: Build
+    displayName: Build and push stage
+    jobs:
+      - job: DockerComposeBuildAndPush
+        displayName: Docker Compose Build and Push
+        variables:
+          - group: TSTVariable
+        steps:
+          - task: DockerCompose@0
+            displayName: "Docker Compose build"
+            inputs:
+              containerregistrytype: "Azure Container Registry"
+              azureContainerRegistry: "tst18221162" # Your Azure Container Registry name
+              dockerComposeFile: "$(dockerComposeFile)"
+              action: "Build services"
+              additionalImageTags: |
+                $(imageTag)
+
+          - task: DockerCompose@0
+            displayName: "Docker Compose push"
+            inputs:
+              containerregistrytype: "Azure Container Registry"
+              azureContainerRegistry: "tst18221162" # Your Azure Container Registry name
+              dockerComposeFile: "$(dockerComposeFile)"
+              action: "Push services"
+              additionalImageTags: |
+                $(imageTag)

@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from app.routes.vibe import router as vibe_router
 from app.routes.user import router as auth_router
+from app.routes.recommendation import router as recommedation_router
 
 app = FastAPI()
 
@@ -10,3 +11,4 @@ async def root():
 
 app.include_router(auth_router, prefix="/users")
 app.include_router(vibe_router, prefix="/vibes")
+app.include_router(recommedation_router, prefix="/recommendations")

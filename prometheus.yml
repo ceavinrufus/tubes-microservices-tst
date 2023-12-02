@@ -1,0 +1,13 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: "movie-recommendation"
+    static_configs:
+      - targets: ["viberec:8000"]
+  - job_name: "vibe-based-recommendation"
+    static_configs:
+      - targets: ["movierec:8001"]
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["prometheus:9090"]
