@@ -18,8 +18,6 @@ load_dotenv(override=True)
 USERNAME = os.getenv("USERNAME")
 PASSWORD = os.getenv("PASSWORD") 
 
-beverage_rec_auth = Service2AuthMiddleware('https://bevbuddy.up.railway.app/login', USERNAME, PASSWORD, "token")
-movie_rec_auth = Service2AuthMiddleware('https://movie-rec-18221162.azurewebsites.net/users/login', USERNAME, PASSWORD, "access_token")
 
 @router.post("/recommendations/")
 async def recommendations(input: str, max_amount: int, current_user: JWTBearer = Depends(JWTBearer(roles=["customer", "admin", "superadmin"]))):
@@ -28,8 +26,19 @@ async def recommendations(input: str, max_amount: int, current_user: JWTBearer =
     result_label = result[0]["label"]
     mood = mood_mapping[result_label]
 
-    movie_response = movie_rec_auth.make_authenticated_request('https://movie-rec-18221162.azurewebsites.net/movies/recommendations/', method='POST', params={"mood": mood, "max_amount": max_amount})
-    if movie_response.status_code == 200:
+    retval = {"results": {"mood":mood}}
+
+
+    try:
+        movie_rec_auth = Service2AuthMiddleware('https://movie-rec-18221162.azurewebsites.net/users/login', USERNAME, PASSWORD, "access_token")
+        movie_response = movie_rec_auth.make_authenticated_request('https://movie-rec-18221162.azurewebsites.net/movies/recommendations/', method='POST', params={"mood": mood, "max_amount": max_amount})
+        if movie_response.status_code == 200:
+            retval["results"].update({"movie_recommendations": movie_response.json()["recommendations"]})
+    except Exception as e:
+        retval["results"].update({"movie_recommendations": []})
+        print(str(e))
+
+    try:
         request_body = {
             "activity": "moderately_active",
             "age": calculate_age(current_user.birthdate.isoformat()),
@@ -40,14 +49,15 @@ async def recommendations(input: str, max_amount: int, current_user: JWTBearer =
             "weight": current_user.weight,
             "max_rec": max_amount
         }
-        
+        beverage_rec_auth = Service2AuthMiddleware('https://bevbuddy.up.railway.app/login', USERNAME, PASSWORD, "token")
         beverage_response = beverage_rec_auth.make_authenticated_request('https://bevbuddy.up.railway.app/recommendations', method='POST', data=request_body)
         if beverage_response.status_code == 200:
-            return {"results": {"mood":mood, "movie_recommendations": movie_response.json()["recommendations"], "beverage_recommendations": beverage_response.json()}}
-        else:
-            return json.loads(beverage_response.text)
-    else:
-        return json.loads(movie_response.text)
+            retval["results"].update({"beverage_recommendations": beverage_response.json()})
+    except Exception as e:
+        retval["results"].update({"beverage_recommendations": []})
+        print(str(e))
+        
+    return retval
 
 
 @router.get('')

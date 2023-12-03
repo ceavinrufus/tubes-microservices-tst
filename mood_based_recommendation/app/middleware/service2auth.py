@@ -22,12 +22,8 @@ class Service2AuthMiddleware:
             token_data = response.json()
             self.token = token_data.get(self.tokenAttr)
             self.token_expiration = datetime.utcnow() + timedelta(minutes=300)  # Adjust token expiration
-            print("Token acquired successfully.")
         else:
-            print("Failed to acquire token.")
-            print("Response status code:", response.status_code)
-            print("Response text:", response.text)
-            raise Exception('Failed to login to Service 2')
+            raise Exception('Failed to login on', self.service2_login_url)
 
     def get_token(self):
         if not self.token or datetime.utcnow() > self.token_expiration:
