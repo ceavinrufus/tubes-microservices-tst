@@ -49,6 +49,10 @@ async def movies_recommendation(mood: str, max_amount: int, Authorize: JWTBearer
         recommend_movie = list(movies_collection.find({"genres.name":"Comedy"}))
     elif (mood.lower() == "scared"):
         recommend_movie = list(movies_collection.find({"genres.name":{ "$in" : ["Thriller", "Horror"] }}))
+    elif (mood.lower() == "angry"):
+        recommend_movie = list(movies_collection.find({"genres.name":{ "$in" : ["Action", "Thriller"] }}))
+    elif (mood.lower() == "neutral"):
+        recommend_movie = list(movies_collection.find())
     else:
         raise HTTPException(status_code=400, detail="Can't detect mood")
 
