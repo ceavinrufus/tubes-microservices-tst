@@ -10,7 +10,7 @@ from app.config.database import users_collection
 import os
 
 load_dotenv(find_dotenv())
-SECRET_KEY = os.getenv("SECRET_KEY")
+KEY = os.getenv("KEY")
 ALGORITHM = os.getenv("ALGORITHM") 
 
 class AuthHandler():
@@ -46,14 +46,14 @@ class AuthHandler():
             expire = datetime.utcnow() + timedelta(minutes=15)
 
         to_encode.update({"exp": expire})
-        encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+        encoded_jwt = jwt.encode(to_encode, KEY, algorithm=ALGORITHM)
         
         return encoded_jwt
         
     def get_current_user(self, token: str):
         credential_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials", headers={"WWW-Authenticate": "Bearer"})
         try:
-            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            payload = jwt.decode(token, KEY, algorithms=[ALGORITHM])
             username: str = payload.get("sub")
             if username is None:
                 raise credential_exception

@@ -30,18 +30,18 @@ stages:
             displayName: Build Docker image
             inputs:
               command: build
-              repository: "tst18221162.azurecr.io/movie-rec"
+              repository: "tst18221162.azurecr.io/vibe-rec"
               containerRegistry: "TubesTSTDocker"
               dockerfile: $(dockerfilePath)
               tags: |
                 $(imageTag)
-              arguments: "--build-arg DATABASE_URL=$(DATABASE_URL) --build-arg KEY=$(KEY) --build-arg ALGORITHM=$(ALGORITHM) --build-arg SUPERADMIN_SECRET_KEY=$(SUPERADMIN_SECRET_KEY)"
+              arguments: "--build-arg DATABASE_URL=$(DATABASE_URL) --build-arg KEY=$(KEY) --build-arg ALGORITHM=$(ALGORITHM) --build-arg SUPERADMIN_SECRET_KEY=$(SUPERADMIN_SECRET_KEY) --build-arg USERNAME=$(USERNAME) --build-arg PASSWORD=$(PASSWORD)"
 
           - task: Docker@2
             displayName: Push Docker image to registry
             inputs:
               command: push
-              repository: "tst18221162.azurecr.io/movie-rec"
+              repository: "tst18221162.azurecr.io/vibe-rec"
               containerRegistry: "TubesTSTDocker" # Update with your container registry service connection name
               tags: |
                 $(imageTag)

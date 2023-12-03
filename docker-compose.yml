@@ -17,9 +17,8 @@ services:
           memory: 512M
     environment:
       DATABASE_URL: ${DATABASE_URL}
-      SECRET_KEY: "${KEY}"
+      KEY: ${KEY}
       ALGORITHM: ${ALGORITHM}
-      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES}
       SUPERADMIN_SECRET_KEY: ${SUPERADMIN_SECRET_KEY}
   viberec:
     image: tst18221162.azurecr.io/vibe-rec:latest
@@ -38,9 +37,8 @@ services:
           memory: 512M
     environment:
       DATABASE_URL: ${DATABASE_URL}
-      SECRET_KEY: "${KEY}"
+      KEY: ${KEY}
       ALGORITHM: ${ALGORITHM}
-      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES}
       USERNAME: ${USERNAME}
       PASSWORD: ${PASSWORD}
       SUPERADMIN_SECRET_KEY: ${SUPERADMIN_SECRET_KEY}
@@ -48,20 +46,9 @@ services:
     image: prom/prometheus:latest
     ports:
       - 9090:9090
-    command: "--config.file=/usr/src/app/prometheus.yml"
-    volumes:
-      - ./prometheus.yml:/usr/src/app/prometheus.yml:ro
-      - ./prometheus-data:/prometheus
     restart: unless-stopped
   grafana:
     image: grafana/grafana-oss:latest
     ports:
       - "3000:3000"
-    volumes:
-      - grafana-data:/var/lib/grafana
     restart: unless-stopped
-volumes:
-  prometheus-data:
-    driver: local
-  grafana-data:
-    driver: local
