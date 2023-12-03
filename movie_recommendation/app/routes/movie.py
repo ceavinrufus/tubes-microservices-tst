@@ -9,6 +9,7 @@ from fuzzywuzzy import fuzz
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import pandas as pd
+import random
 
 router = APIRouter(tags=["Movies"])
 
@@ -22,6 +23,13 @@ async def movies_recommendation(mood: str, max_amount: int, Authorize: JWTBearer
         recommend_movie = list(movies_collection.find({"genres.name":{ "$in" : ["Action", "Adventure"] }}))
     elif (mood.lower() == "sad"):
         recommend_movie = list(movies_collection.find({"genres.name":{ "$in" : ["Drama", "Romance"] }}))
+    elif (mood.lower() == "loved"):
+        recommend_movie = list(movies_collection.find({
+            "$and": [
+                {"genres.name":{ "$in" : ["Romance", "Family"] }},
+                {"vote_average":{ "$gt": 8 }}
+            ]
+        }))
     elif (mood.lower() == "bored"):
         recommend_movie = list(movies_collection.find({
             "$and": [
@@ -35,17 +43,28 @@ async def movies_recommendation(mood: str, max_amount: int, Authorize: JWTBearer
         recommend_movie = list(movies_collection.find({"genres.name":{ "$in" : ["Drama", "Family", "Comedy"] }}))
     elif (mood.lower() == "tense"):
         recommend_movie = list(movies_collection.find({"genres.name":{ "$in" : ["Crime", "War", "Action"] }}))
+    elif (mood.lower() == "focus"):
+        recommend_movie = list(movies_collection.find({"genres.name":{ "$in" : ["Science Fiction", "Documentary", "History"] }}))
     elif (mood.lower() == "humorous"):
         recommend_movie = list(movies_collection.find({"genres.name":"Comedy"}))
+    elif (mood.lower() == "scared"):
+        recommend_movie = list(movies_collection.find({"genres.name":{ "$in" : ["Thriller", "Horror"] }}))
     else:
         raise HTTPException(status_code=400, detail="Can't detect mood")
 
     if max_amount > len(recommend_movie):
         max_amount = len(recommend_movie)
-        
+    
+    indices = list(range(len(recommend_movie)))
+    random.shuffle(indices)
+
     result=[]
-    for i in range(max_amount):
-        result.append({"movie_id":int(recommend_movie[i]["id"]),"title":recommend_movie[i]["title"]})
+    indices = indices[:max_amount]
+    for i in indices:
+        result.append({
+            "movie_id": int(recommend_movie[i]["id"]),
+            "title": recommend_movie[i]["title"]
+        })
 
     return {"recommendations": result}
 
