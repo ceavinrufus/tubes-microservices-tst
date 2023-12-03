@@ -22,12 +22,12 @@ async def movies_recommendation(mood: str, max_amount: int, Authorize: JWTBearer
     if (mood.lower() == "tired"):
         recommend_movie = list(movies_collection.find({"genres.name":{ "$in" : ["Action", "Adventure"] }}))
     elif (mood.lower() == "sad"):
-        recommend_movie = list(movies_collection.find({"genres.name":{ "$in" : ["Drama", "Romance"] }}))
+        recommend_movie = list(movies_collection.find({"genres.name":{ "$in" : ["Drama", "Animation"] }}))
     elif (mood.lower() == "loved"):
         recommend_movie = list(movies_collection.find({
             "$and": [
                 {"genres.name":{ "$in" : ["Romance", "Family"] }},
-                {"vote_average":{ "$gt": 8 }}
+                {"vote_average":{ "$gt": 6 }}
             ]
         }))
     elif (mood.lower() == "bored"):
@@ -44,7 +44,12 @@ async def movies_recommendation(mood: str, max_amount: int, Authorize: JWTBearer
     elif (mood.lower() == "tense"):
         recommend_movie = list(movies_collection.find({"genres.name":{ "$in" : ["Crime", "War", "Action"] }}))
     elif (mood.lower() == "focus"):
-        recommend_movie = list(movies_collection.find({"genres.name":{ "$in" : ["Science Fiction", "Documentary", "History"] }}))
+        recommend_movie = list(movies_collection.find({
+            "$and": [
+                {"genres.name":{ "$in" : ["Science Fiction", "Documentary", "History"] }},
+                {"vote_average":{ "$gt": 6 }}
+            ]
+        }))
     elif (mood.lower() == "humorous"):
         recommend_movie = list(movies_collection.find({"genres.name":"Comedy"}))
     elif (mood.lower() == "scared"):
