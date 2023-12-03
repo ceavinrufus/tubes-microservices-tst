@@ -2,10 +2,11 @@ import requests
 from datetime import datetime, timedelta
 
 class Service2AuthMiddleware:
-    def __init__(self, service2_login_url, username, password):
+    def __init__(self, service2_login_url, username, password, tokenAttr):
         self.service2_login_url = service2_login_url
         self.username = username
         self.password = password
+        self.tokenAttr = tokenAttr
         self.token = None
         self.token_expiration = None
 
@@ -19,7 +20,7 @@ class Service2AuthMiddleware:
 
         if response.status_code == 200:
             token_data = response.json()
-            self.token = token_data.get('token')
+            self.token = token_data.get(self.tokenAttr)
             self.token_expiration = datetime.utcnow() + timedelta(minutes=300)  # Adjust token expiration
             print("Token acquired successfully.")
         else:

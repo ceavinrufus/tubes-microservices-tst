@@ -66,4 +66,4 @@ class AuthHandler():
         if user is None:
             raise credential_exception
         
-        return dict(user)
+        return user

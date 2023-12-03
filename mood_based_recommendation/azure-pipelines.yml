@@ -30,7 +30,7 @@ stages:
             displayName: Build Docker image
             inputs:
               command: build
-              repository: "tst18221162.azurecr.io/vibe-rec"
+              repository: "tst18221162.azurecr.io/mood-rec"
               containerRegistry: "TubesTSTDocker"
               dockerfile: $(dockerfilePath)
               tags: |
@@ -41,7 +41,7 @@ stages:
             displayName: Push Docker image to registry
             inputs:
               command: push
-              repository: "tst18221162.azurecr.io/vibe-rec"
+              repository: "tst18221162.azurecr.io/mood-rec"
               containerRegistry: "TubesTSTDocker" # Update with your container registry service connection name
               tags: |
                 $(imageTag)

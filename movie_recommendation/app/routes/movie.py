@@ -14,8 +14,8 @@ import random
 router = APIRouter(tags=["Movies"])
 
 # Recommendation
-@router.post("/recommendation/")
-async def movies_recommendation(mood: str, max_amount: int, Authorize: JWTBearer = Depends(JWTBearer(roles=["customer", "admin", "superadmin"]))):
+@router.post("/recommendations/")
+async def movie_recommendations(mood: str, max_amount: int, Authorize: JWTBearer = Depends(JWTBearer(roles=["customer", "admin", "superadmin"]))):
     if max_amount > 20:
         raise HTTPException(status_code=400, detail="The max_amount of recommendation should lower than or equal to 20")
 

@@ -16,7 +16,7 @@ class JWTBearer(HTTPBearer):
                 raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Scheme Invalid")
             decoded = auth.get_current_user(credentials.credentials)
             if decoded is not None:
-                if self.roles and decoded.get("role") not in self.roles:
+                if self.roles and decoded.role not in self.roles:
                     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Unauthorized: Invalid role')
                 return decoded
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Invalid token')
