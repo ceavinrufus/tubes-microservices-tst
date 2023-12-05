@@ -1,4 +1,4 @@
-# Tugas Besar TST: Movie Recommendation Microservice Deployment
+# Movie Recommendation Microservice
 
 Made by Ceavin Rufus
 
