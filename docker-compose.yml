@@ -42,13 +42,26 @@ services:
       USERNAME: ${USERNAME}
       PASSWORD: ${PASSWORD}
       SUPERADMIN_SECRET_KEY: ${SUPERADMIN_SECRET_KEY}
+      API_KEY: ${API_KEY}
   prometheus:
     image: prom/prometheus:latest
     ports:
       - 9090:9090
+    command: "--config.file=/usr/src/app/prometheus.yml"
+    volumes:
+      - ./prometheus.yml:/usr/src/app/prometheus.yml:ro
+      - ./prometheus-data:/prometheus
     restart: unless-stopped
   grafana:
     image: grafana/grafana-oss:latest
     ports:
       - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
     restart: unless-stopped
+volumes:
+  db:
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
