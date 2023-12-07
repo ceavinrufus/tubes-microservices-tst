@@ -69,15 +69,17 @@ _Microservice_ ini merupakan hasil integrasi dari:
 
 ### Moods
 
-| Endpoint                | Method | Summary          | Parameters                                             | Request Body               | Responses                                                                                    | Security  |
-| ----------------------- | ------ | ---------------- | ------------------------------------------------------ | -------------------------- | -------------------------------------------------------------------------------------------- | --------- |
-| /moods/recommendations/ | POST   | Recommendations  | input (query, string) <br> max_amount (query, integer) |                            | 200: Successful Response (application/json) <br> 422: Validation Error (HTTPValidationError) | JWTBearer |
-| /moods                  | GET    | Get All Moods    |                                                        |                            | 200: Successful Response (application/json)                                                  | JWTBearer |
-| /moods                  | POST   | Create Mood      |                                                        | MoodReq (application/json) | 200: Successful Response (application/json) <br> 422: Validation Error (HTTPValidationError) | JWTBearer |
-| /moods/user/{username}  | GET    | Get User Moods   | username (path, string)                                |                            | 200: Successful Response (application/json) <br> 422: Validation Error (HTTPValidationError) | JWTBearer |
-| /moods/{date}           | GET    | Get Mood By Date | date (path, string, date)                              |                            | 200: Successful Response (application/json) <br> 422: Validation Error (HTTPValidationError) | JWTBearer |
-| /moods/{datetime}       | PUT    | Update Mood      | datetime (path, string, date-time)                     | MoodReq (application/json) | 200: Successful Response (application/json) <br> 422: Validation Error (HTTPValidationError) | JWTBearer |
-|                         | DELETE | Delete Mood      | datetime (path, string, date-time)                     |                            | 200: Successful Response (application/json) <br> 422: Validation Error (HTTPValidationError) | JWTBearer |
+| Endpoint                   | Method | Summary              | Parameters                                             | Request Body               | Responses                                                                                    | Security  |
+| -------------------------- | ------ | -------------------- | ------------------------------------------------------ | -------------------------- | -------------------------------------------------------------------------------------------- | --------- |
+| /moods/recommendations/    | POST   | Recommendations      | input (query, string) <br> max_amount (query, integer) |                            | 200: Successful Response (application/json) <br> 422: Validation Error (HTTPValidationError) | JWTBearer |
+| /moods/detect/             | GET    | Recommendations      | input (query, string)                                  |                            | 200: Successful Response (application/json) <br> 422: Validation Error (HTTPValidationError) |           |
+| /moods                     | GET    | Get All Moods        |                                                        |                            | 200: Successful Response (application/json)                                                  | JWTBearer |
+| /moods                     | POST   | Create Mood          |                                                        | MoodReq (application/json) | 200: Successful Response (application/json) <br> 422: Validation Error (HTTPValidationError) | JWTBearer |
+| /moods/user/{username}     | GET    | Get User Moods       | username (path, string)                                |                            | 200: Successful Response (application/json) <br> 422: Validation Error (HTTPValidationError) | JWTBearer |
+| /moods/date/{date}         | GET    | Get Mood By Date     | date (path, string, format: date)                      |                            | 200: Successful Response (application/json) <br> 422: Validation Error (HTTPValidationError) | JWTBearer |
+| /moods/datetime/{datetime} | GET    | Get Mood By Datetime | datetime (path, string, format: date-time)             |                            | 200: Successful Response (application/json) <br> 422: Validation Error (HTTPValidationError) | JWTBearer |
+| /moods/{datetime}          | PUT    | Update Mood          | datetime (path, string, format: date-time)             | MoodReq (application/json) | 200: Successful Response (application/json) <br> 422: Validation Error (HTTPValidationError) | JWTBearer |
+| /moods/{datetime}          | DELETE | Delete Mood          | datetime (path, string, format: date-time)             |                            | 200: Successful Response (application/json) <br> 422: Validation Error (HTTPValidationError) | JWTBearer |
 
 ## Schemas
 
@@ -89,11 +91,11 @@ _Microservice_ ini merupakan hasil integrasi dari:
 
 ### MoodReq
 
-| Property | Type                                                   | Description |
-| -------- | ------------------------------------------------------ | ----------- |
-| mood     | enum: happy/loved/focus/chill/sad/scared/angry/neutral | Mood        |
-| notes    | string                                                 | Notes       |
-| datetime | string (format: date-time)                             | Datetime    |
+| Property | Type   | Description |
+| -------- | ------ | ----------- |
+| mood     | string | Mood        |
+| notes    | string | Notes       |
+| datetime | string | Datetime    |
 
 ### Token
 
@@ -113,7 +115,7 @@ _Microservice_ ini merupakan hasil integrasi dari:
 | role      | enum: customer/admin/superadmin | Role        |
 | weight    | number                          | Weight      |
 | height    | number                          | Height      |
-| birthdate | string (format: date)           | Birthdate   |
+| birthdate | string                          | Birthdate   |
 
 ### UserInDB
 
@@ -126,7 +128,7 @@ _Microservice_ ini merupakan hasil integrasi dari:
 | role      | enum: customer/admin/superadmin | Role        |
 | weight    | number                          | Weight      |
 | height    | number                          | Height      |
-| birthdate | string (format: date)           | Birthdate   |
+| birthdate | string                          | Birthdate   |
 | password  | string                          | Password    |
 
 ### UserLogin
