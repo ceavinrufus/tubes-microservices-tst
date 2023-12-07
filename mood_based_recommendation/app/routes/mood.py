@@ -96,7 +96,7 @@ async def get_user_moods(username: str, current_user: JWTBearer = Depends(JWTBea
     return {"results": moods}
 
 
-@router.get('/{date}')
+@router.get('/date/{date}')
 async def get_mood_by_date(date: d, current_user: JWTBearer = Depends(JWTBearer(roles=["customer", "admin", "superadmin"]))):
     if (current_user.role == "customer"):
         mood = moods_collection.find({
@@ -118,6 +118,21 @@ async def get_mood_by_date(date: d, current_user: JWTBearer = Depends(JWTBearer(
         raise HTTPException(status_code=404, detail="Mood not found")
 
     return {"results":list_serial(mood)}
+
+@router.get('/datetime/{datetime}')
+async def get_mood_by_datetime(datetime: datetime, current_user: JWTBearer = Depends(JWTBearer(roles=["customer", "superadmin"]))):
+    if (current_user.role == "customer"):
+        mood = moods_collection.find_one({
+            "$and": [
+                {"datetime": datetime.isoformat()},
+                {"username": current_user.username}  
+            ]
+        })
+    
+    if not mood:
+        raise HTTPException(status_code=404, detail="Mood not found")
+
+    return {"results":individual_serial(mood)}
 
 
 @router.put('/{datetime}')
