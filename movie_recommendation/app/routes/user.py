@@ -8,7 +8,7 @@ from app.middleware.authentication import AuthHandler
 from app.config.database import users_collection
 import os
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 43200
 SUPERADMIN_SECRET_KEY = os.getenv("SUPERADMIN_SECRET_KEY", 0)
 
 router = APIRouter(tags=["Users"])
