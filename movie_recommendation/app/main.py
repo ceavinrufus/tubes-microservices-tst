@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.cors import CORSMiddleware
 from app.routes.movie import router as movie_router
 from app.routes.user import router as auth_router
 
@@ -8,9 +8,9 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    # allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=[""],
+    allow_headers=["*"],
 )
 
 @app.get("/")
