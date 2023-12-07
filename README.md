@@ -69,4 +69,4 @@ https://tubes-tst-18221162.azure-api.net
 
 ### Beverage Recommendation
 
-- Detail information about this service is available in my friend @fiknaufalh repository (https://github.com/fiknaufalh/bevbuddy/)
+- Detail information about this service is available in my friend [@fiknaufalh](https://github.com/fiknaufalh/) repository (https://github.com/fiknaufalh/bevbuddy/)
