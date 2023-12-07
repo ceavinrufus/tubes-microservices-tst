@@ -28,7 +28,6 @@ async def recommendations(input: str, max_amount: int, current_user: JWTBearer =
 
     retval = {"results": {"mood":mood}}
 
-
     try:
         movie_rec_auth = Service2AuthMiddleware('https://movie-rec-18221162.azurewebsites.net/users/login', USERNAME, PASSWORD, "access_token")
         movie_response = movie_rec_auth.make_authenticated_request('https://movie-rec-18221162.azurewebsites.net/movies/recommendations/', method='POST', params={"mood": mood, "max_amount": max_amount})
@@ -59,6 +58,27 @@ async def recommendations(input: str, max_amount: int, current_user: JWTBearer =
         
     return retval
 
+@router.get("/detect/")
+async def recommendations(input: str):
+    result = mood_detection(input)[0]
+    total = 0
+    for item in result:
+        result_label = item["label"]
+        item["label"] = mood_mapping[result_label]
+        total += item["score"]
+
+    label_scores = {}
+
+    for item in result:
+        label = item['label']
+        score = item['score']
+        if label in label_scores:
+            label_scores[label].append(score)
+        else:
+            label_scores[label] = [score]
+    result = [{"label": label, "score": sum(scores)} for label, scores in label_scores.items()]
+
+    return result
 
 @router.get('')
 async def get_all_moods(current_user: JWTBearer = Depends(JWTBearer(roles=["customer", "admin", "superadmin"]))):
@@ -150,7 +170,7 @@ async def create_mood(mood: MoodReq, current_user: JWTBearer = Depends(JWTBearer
 
 
 @router.delete('/{datetime}')
-async def delete_mood(datetime: datetime, current_user: JWTBearer = Depends(JWTBearer(roles=["admin", "superadmin"]))):
+async def delete_mood(datetime: datetime, current_user: JWTBearer = Depends(JWTBearer(roles=["customer", "superadmin"]))):
     existing_mood = moods_collection.find_one({
         "$and": [
             {"datetime": datetime.isoformat()},
