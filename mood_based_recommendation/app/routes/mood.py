@@ -48,8 +48,8 @@ async def recommendations(input: str, max_amount: int, current_user: JWTBearer =
             "weight": current_user.weight,
             "max_rec": max_amount
         }
-        beverage_rec_auth = Service2AuthMiddleware('https://bevbuddy.up.railway.app/login', USERNAME, PASSWORD, "token")
-        beverage_response = beverage_rec_auth.make_authenticated_request('https://bevbuddy.up.railway.app/recommendations', method='POST', data=request_body)
+        beverage_rec_auth = Service2AuthMiddleware('https://bevbuddy--c3oinea.thankfulbush-47818fd3.southeastasia.azurecontainerapps.io/login', USERNAME, PASSWORD, "token")
+        beverage_response = beverage_rec_auth.make_authenticated_request('https://bevbuddy--c3oinea.thankfulbush-47818fd3.southeastasia.azurecontainerapps.io/recommendations', method='POST', data=request_body)
         if beverage_response.status_code == 200:
             retval["results"].update({"beverage_recommendations": beverage_response.json()})
     except Exception as e:
