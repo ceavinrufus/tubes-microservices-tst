@@ -14,3 +14,7 @@ class User(BaseModel):
 
 class UserInDB(User):
     password: str
+
+class UserLogin(BaseModel):
+    username: str
+    password: str

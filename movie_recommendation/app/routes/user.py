@@ -1,9 +1,8 @@
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from datetime import timedelta
-from fastapi.security import OAuth2PasswordRequestForm
 from app.middleware.authorization import JWTBearer
-from app.models.user import User, UserInDB
+from app.models.user import User, UserInDB, UserLogin
 from app.models.token import Token
 from app.middleware.authentication import AuthHandler
 from app.config.database import users_collection
@@ -48,7 +47,7 @@ async def register(user: UserInDB, superadmin_key: Optional[str] = Query(None, a
 
 
 @router.post("/login", response_model=Token)
-async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+async def login(form_data: UserLogin):
     user = auth.authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password", headers={"WWW-Authenticate": "Bearer"})
