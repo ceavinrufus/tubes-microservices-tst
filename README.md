@@ -2,15 +2,21 @@
 
 <p style="font-size: 20px;">Made by Ceavin Rufus De Prayer Purba - 18221162</p>
 
+Example of frontend app that use this API:</br>
+https://moodtertainment.netlify.app/
+
 Made using Azure API Management, you can access the service through the following endpoint:</br>
 https://tubes-tst-18221162.azure-api.net
 
-- If you want to use **Movie Recommendation** microservice
-  - Access the service via https://tubes-tst-18221162.azure-api.net/movie-recommendation
-  - Which is equivalent to accessing it through https://movie-rec-18221162.azurewebsites.net
 - If you want to use **Mood Based Recommendation** microservice
   - Access the service via https://tubes-tst-18221162.azure-api.net/mood-based-recommendation
   - Which is equivalent to accessing it through https://mood-rec-18221162.azurewebsites.net
+- If you want to use **Movie Recommendation** microservice
+  - Access the service via https://tubes-tst-18221162.azure-api.net/movie-recommendation
+  - Which is equivalent to accessing it through https://movie-rec-18221162.azurewebsites.net
+- If you want to use **Beverage Recommendation** microservice
+  - Access the service via https://tubes-tst-18221162.azure-api.net/beverage-recommendation
+  - Which is equivalent to accessing it through https://bevbuddy--c3oinea.thankfulbush-47818fd3.southeastasia.azurecontainerapps.io/
 
 ## Requirements
 
@@ -67,6 +73,8 @@ https://tubes-tst-18221162.azure-api.net
 - Redoc: https://movie-rec-18221162.azurewebsites.net/redoc
 - API Contract: https://github.com/ceavinrufus/tubes-microservices-tst/blob/master/movie_recommendation/README.md
 
-### Beverage Recommendation
+### Beverage Recommendation (External Service)
 
+- Swagger: https://bevbuddy--c3oinea.thankfulbush-47818fd3.southeastasia.azurecontainerapps.io/docs
+- Redoc: https://bevbuddy--c3oinea.thankfulbush-47818fd3.southeastasia.azurecontainerapps.io/redoc
 - Detail information about this service is available in my friend [@fiknaufalh](https://github.com/fiknaufalh/) repository (https://github.com/fiknaufalh/bevbuddy/)

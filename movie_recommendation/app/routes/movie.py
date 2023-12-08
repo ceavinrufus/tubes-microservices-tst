@@ -72,7 +72,12 @@ async def movie_recommendations(mood: str, max_amount: int, Authorize: JWTBearer
     for i in indices:
         result.append({
             "movie_id": int(recommend_movie[i]["id"]),
-            "title": recommend_movie[i]["title"]
+            "title": recommend_movie[i]["title"],
+            "genres":[genre["name"] for genre in recommend_movie[i]["genres"]],
+            "overview": recommend_movie[i]["overview"],
+            "vote_average": recommend_movie[i]["vote_average"],
+            "runtime": recommend_movie[i]["runtime"],
+            "release_date": recommend_movie[i]["release_date"],
         })
 
     return {"recommendations": result}
@@ -100,9 +105,14 @@ async def similar_movies(movie_id: int, max_amount: int,  Authorize: JWTBearer =
     distance = sorted(list(enumerate(similarity[index])), reverse=True, key=lambda vector:vector[1])
     recommend_movie=[]
     for i in distance[1:max_amount+1]:
-        recommend_movie.append({"movie_id":int(movies.iloc[i[0]].movie_id),"title":movies.iloc[i[0]].title})
+        recommend_movie.append({
+            "movie_id": int(movies.iloc[i[0]]["movie_id"]),
+            "title": movies.iloc[i[0]]["title"],
+            "genres":[genre["name"] for genre in movies.iloc[i[0]]["genres"]],
+            "overview": movies.iloc[i[0]]["overview"],
+        })
 
-    return {"similar": recommend_movie}
+    return {"movie": existing_movie["title"], "similar": recommend_movie}
 
 # Get all movies
 @router.get('')
