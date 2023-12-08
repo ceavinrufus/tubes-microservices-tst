@@ -15,7 +15,7 @@ router = APIRouter(tags=["Movies"])
 
 # Recommendation
 @router.post("/recommendations/")
-async def movie_recommendations(mood: str, max_amount: int, Authorize: JWTBearer = Depends(JWTBearer(roles=["customer", "admin", "superadmin"]))):
+async def movie_recommendations(mood: str, max_amount: int, Authorize: JWTBearer = Depends(JWTBearer(roles=["customer", "superadmin"]))):
     if max_amount > 20:
         raise HTTPException(status_code=400, detail="The max_amount of recommendation should lower than or equal to 20")
 
@@ -79,7 +79,7 @@ async def movie_recommendations(mood: str, max_amount: int, Authorize: JWTBearer
 
 # Similar
 @router.get("/similar/")
-async def similar_movies(movie_id: int, max_amount: int,  Authorize: JWTBearer = Depends(JWTBearer(roles=["customer", "admin", "superadmin"]))):
+async def similar_movies(movie_id: int, max_amount: int,  Authorize: JWTBearer = Depends(JWTBearer(roles=["customer", "superadmin"]))):
     if max_amount > 20:
         raise HTTPException(status_code=400, detail="The max_amount of recommendation should lower than or equal to 20")
     existing_movie = movies_collection.find_one({"id": movie_id})
