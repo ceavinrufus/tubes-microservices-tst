@@ -1,4 +1,4 @@
-from fastapi import Depends, Security, Request, HTTPException, status
+from fastapi import Request, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from app.middleware.authentication import AuthHandler
 
@@ -14,7 +14,7 @@ class JWTBearer(HTTPBearer):
         if credentials:
             if not credentials.scheme == "Bearer":
                 raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Scheme Invalid")
-            decoded = auth.get_current_user(credentials.credentials)
+            decoded = auth.get_current_user(credentials)
             if decoded is not None:
                 if self.roles and decoded.role not in self.roles:
                     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Unauthorized: Invalid role')

@@ -1,5 +1,6 @@
-from fastapi import HTTPException, status
-from fastapi.security import HTTPBearer
+from typing import Annotated
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from app.models.token import TokenData
@@ -50,10 +51,10 @@ class AuthHandler():
         
         return encoded_jwt
         
-    def get_current_user(self, token: str):
+    def get_current_user(self, credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)]):
         credential_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials", headers={"WWW-Authenticate": "Bearer"})
         try:
-            payload = jwt.decode(token, KEY, algorithms=[ALGORITHM])
+            payload = jwt.decode(credentials.credentials, KEY, algorithms=[ALGORITHM])
             username: str = payload.get("sub")
             if username is None:
                 raise credential_exception
